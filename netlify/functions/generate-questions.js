@@ -29,7 +29,7 @@ exports.handler = async (event) => {
         messages: [
           {
             role: 'user',
-            content: `Based on this study material, generate exactly ${numQuestions} multiple choice questions. Return ONLY a valid JSON array with no additional text. Each question should have: "question" (string), "options" (array of 4 strings), "correct" (number 0-3 for the correct option index). Mix understanding questions with equation solving problems.
+            content: `Based on this study material, generate exactly ${numQuestions} multiple choice questions. Return ONLY a valid JSON array with no additional text. Each question should have: "question" (string), "options" (array of 4 strings), "correct" (number 0-3 for the correct option index), and "explanation" (string with a short 1-2 sentence explanation of why the correct answer is right. For technical/calculation problems, provide step-by-step solution). Mix understanding questions with equation solving problems.
 
 Study material:
 ${material}
