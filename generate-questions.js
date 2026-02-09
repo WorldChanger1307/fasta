@@ -1,6 +1,4 @@
-// netlify/functions/generate-questions.js
 exports.handler = async (event) => {
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -42,23 +40,47 @@ Return ONLY the JSON array, starting with [ and ending with ]`,
       }),
     });
 
+    const responseText = await response.text();
+
     if (!response.ok) {
-      const error = await response.json();
+      try {
+        const error = JSON.parse(responseText);
+        return {
+          statusCode: response.status,
+          body: JSON.stringify({ error: error.error?.message || responseText }),
+        };
+      } catch (e) {
+        return {
+          statusCode: response.status,
+          body: JSON.stringify({ error: `HTTP ${response.status}: ${responseText}` }),
+        };
+      }
+    }
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
       return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: error.error?.message || 'API request failed' }),
+        statusCode: 500,
+        body: JSON.stringify({ error: `Invalid JSON from API: ${responseText.substring(0, 200)}` }),
       };
     }
 
-    const data = await response.json();
-    const content = data.content[0].text;
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Unexpected API response format' }),
+      };
+    }
 
-    // Extract JSON from the response
+    const content = data.content[0].text;
     const jsonMatch = content.match(/\[[\s\S]*\]/);
+    
     if (!jsonMatch) {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Could not parse questions from response' }),
+        statusCode: 500,
+        body: JSON.stringify({ error: `Could not find JSON in response: ${content.substring(0, 200)}` }),
       };
     }
 
@@ -71,7 +93,7 @@ Return ONLY the JSON array, starting with [ and ending with ]`,
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: `Server error: ${error.message}` }),
     };
   }
 };
