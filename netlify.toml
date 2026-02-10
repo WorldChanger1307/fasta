@@ -1,7 +1,1 @@
-[build]
-  command = "echo 'No build step needed'"
-  functions = "netlify/functions"
-  publish = "."
 
-[dev]
-  functions = "netlify/functions"
