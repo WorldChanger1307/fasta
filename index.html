@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Quiz Generator</title>
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Fast & relevant questions for your upcoming exam">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <title>FastA - Study Quiz</title>
     <style>
         * {
             margin: 0;
@@ -17,6 +21,7 @@
             min-height: 100vh;
             padding: 20px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
@@ -28,6 +33,7 @@
             max-width: 800px;
             width: 100%;
             padding: 40px;
+            margin-bottom: 20px;
         }
 
         h1 {
@@ -42,6 +48,13 @@
             color: #666;
             margin-bottom: 30px;
             font-size: 1.1em;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+            margin-top: 20px;
         }
 
         .subject-selection {
@@ -261,13 +274,17 @@
                 min-height: 60px;
                 padding: 15px;
             }
+
+            .footer {
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎓 Study Quiz</h1>
-        <p class="subtitle">Free practice questions - No API key needed!</p>
+        <h1>🎓 FastA</h1>
+        <p class="subtitle">Fast & relevant questions for your upcoming exam</p>
         
         <div id="setupSection">
             <div class="subject-selection">
@@ -291,23 +308,6 @@
             </div>
             
             <button onclick="startQuiz()">Start Quiz</button>
-            
-            <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
-                <div class="subject-selection">
-                    <label for="downloadSubject">📥 Download for Offline Use:</label>
-                    <p style="color: #666; font-size: 0.9em; margin-bottom: 15px; font-weight: normal;">
-                        Download a subject to practice without internet connection
-                    </p>
-                    <select id="downloadSubject">
-                        <option value="">-- Select Subject to Download --</option>
-                        <option value="java">Java (COMS 1004)</option>
-                        <option value="calculus">Calculus I</option>
-                    </select>
-                    <button onclick="handleDownload()" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); margin-top: 15px;">
-                        Download Selected Course
-                    </button>
-                </div>
-            </div>
         </div>
 
         <div id="quizSection" class="quiz-container">
@@ -328,8 +328,21 @@
         </div>
     </div>
 
+    <div class="footer">
+        By Niv Brikman
+    </div>
+
     <script src="questions.js"></script>
     <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed'));
+            });
+        }
+
         let currentSubject = '';
         let questionPool = [];
         let askedQuestions = [];
@@ -525,232 +538,6 @@
             saveProgress();
             updateStats();
             displayNextQuestion();
-        }
-
-        function handleDownload() {
-            const subject = document.getElementById('downloadSubject').value;
-            if (!subject) {
-                alert('Please select a subject to download first!');
-                return;
-            }
-            downloadOfflineVersion(subject);
-        }
-
-        function downloadOfflineVersion(subject) {
-            const subjectName = subject === 'java' ? 'Java' : 'Calculus';
-            const questions = window.QUESTIONS[subject];
-            
-            const cssContent = document.querySelector('style').textContent;
-            
-            const htmlContent = '<!DOCTYPE html>\n' +
-'<html lang="en">\n' +
-'<head>\n' +
-'    <meta charset="UTF-8">\n' +
-'    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-'    <title>' + subjectName + ' Quiz - Offline Version</title>\n' +
-'    <style>\n' +
-cssContent +
-'    </style>\n' +
-'</head>\n' +
-'<body>\n' +
-'    <div class="container">\n' +
-'        <h1>🎓 ' + subjectName + ' Quiz</h1>\n' +
-'        <p class="subtitle">Offline Practice - ' + questions.length + ' Questions</p>\n' +
-'        \n' +
-'        <div id="setupSection">\n' +
-'            <div class="subject-selection">\n' +
-'                <label for="questionLimit">Number of Questions:</label>\n' +
-'                <select id="questionLimit">\n' +
-'                    <option value="5">5 Questions (Quick Practice)</option>\n' +
-'                    <option value="10">10 Questions (Short Session)</option>\n' +
-'                    <option value="15">15 Questions (Medium Session)</option>\n' +
-'                    <option value="20">20 Questions (Long Session)</option>\n' +
-'                    <option value="unlimited">Unlimited (All Questions)</option>\n' +
-'                </select>\n' +
-'            </div>\n' +
-'            <button onclick="startQuiz()">Start Quiz</button>\n' +
-'        </div>\n' +
-'\n' +
-'        <div id="quizSection" class="quiz-container">\n' +
-'            <div class="stats">\n' +
-'                <div class="stat-item">\n' +
-'                    <div class="stat-number" id="questionsAnswered">0</div>\n' +
-'                    <div class="stat-label">Answered</div>\n' +
-'                </div>\n' +
-'                <div class="stat-item">\n' +
-'                    <div class="stat-number" id="questionsRemaining">' + questions.length + '</div>\n' +
-'                    <div class="stat-label">Remaining</div>\n' +
-'                </div>\n' +
-'            </div>\n' +
-'            <div class="progress-bar">\n' +
-'                <div class="progress-fill" id="progressFill" style="width: 0%"></div>\n' +
-'            </div>\n' +
-'            <div id="quizContent"></div>\n' +
-'        </div>\n' +
-'    </div>\n' +
-'\n' +
-'    <script>\n' +
-'        const QUESTIONS = ' + JSON.stringify(questions) + ';\n' +
-'        let questionPool = QUESTIONS;\n' +
-'        let askedQuestions = [];\n' +
-'        let currentQuestion = null;\n' +
-'        let selectedAnswer = null;\n' +
-'        let questionLimit = "unlimited";\n' +
-'        let questionsAnsweredInSession = 0;\n' +
-'        const STORAGE_KEY = "quiz_progress_' + subject + '_offline";\n' +
-'\n' +
-'        function loadProgress() {\n' +
-'            const saved = localStorage.getItem(STORAGE_KEY);\n' +
-'            return saved ? JSON.parse(saved) : [];\n' +
-'        }\n' +
-'\n' +
-'        function saveProgress() {\n' +
-'            localStorage.setItem(STORAGE_KEY, JSON.stringify(askedQuestions));\n' +
-'        }\n' +
-'\n' +
-'        function startQuiz() {\n' +
-'            const limit = document.getElementById("questionLimit").value;\n' +
-'            questionLimit = limit;\n' +
-'            questionsAnsweredInSession = 0;\n' +
-'            askedQuestions = loadProgress();\n' +
-'\n' +
-'            if (askedQuestions.length >= questionPool.length) {\n' +
-'                if (confirm("You have completed all questions! Start over?")) {\n' +
-'                    askedQuestions = [];\n' +
-'                    saveProgress();\n' +
-'                } else {\n' +
-'                    return;\n' +
-'                }\n' +
-'            }\n' +
-'\n' +
-'            document.getElementById("setupSection").style.display = "none";\n' +
-'            document.getElementById("quizSection").style.display = "block";\n' +
-'            \n' +
-'            updateStats();\n' +
-'            displayNextQuestion();\n' +
-'        }\n' +
-'\n' +
-'        function updateStats() {\n' +
-'            const totalInSession = questionLimit === "unlimited" ? questionPool.length : parseInt(questionLimit);\n' +
-'            const remaining = questionLimit === "unlimited" \n' +
-'                ? questionPool.length - askedQuestions.length \n' +
-'                : Math.max(0, totalInSession - questionsAnsweredInSession);\n' +
-'            \n' +
-'            document.getElementById("questionsAnswered").textContent = questionsAnsweredInSession;\n' +
-'            document.getElementById("questionsRemaining").textContent = remaining;\n' +
-'            \n' +
-'            const progress = questionLimit === "unlimited"\n' +
-'                ? (askedQuestions.length / questionPool.length) * 100\n' +
-'                : (questionsAnsweredInSession / totalInSession) * 100;\n' +
-'            document.getElementById("progressFill").style.width = progress + "%";\n' +
-'        }\n' +
-'\n' +
-'        function displayNextQuestion() {\n' +
-'            if (questionLimit !== "unlimited" && questionsAnsweredInSession >= parseInt(questionLimit)) {\n' +
-'                showSessionComplete();\n' +
-'                return;\n' +
-'            }\n' +
-'\n' +
-'            const availableIndices = questionPool\n' +
-'                .map((_, index) => index)\n' +
-'                .filter(index => !askedQuestions.includes(index));\n' +
-'\n' +
-'            if (availableIndices.length === 0) {\n' +
-'                showCompletion();\n' +
-'                return;\n' +
-'            }\n' +
-'\n' +
-'            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];\n' +
-'            currentQuestion = Object.assign({}, questionPool[randomIndex], {index: randomIndex});\n' +
-'            selectedAnswer = null;\n' +
-'\n' +
-'            const quizContent = document.getElementById("quizContent");\n' +
-'            let html = "<div class=\\"question-card\\">";\n' +
-'            html += "<div class=\\"question-text\\">" + currentQuestion.question + "</div>";\n' +
-'            html += "<div class=\\"answers-grid\\">";\n' +
-'            for (let i = 0; i < currentQuestion.choices.length; i++) {\n' +
-'                html += "<div class=\\"answer-option\\" onclick=\\"selectAnswer(" + i + ")\\">";\n' +
-'                html += currentQuestion.choices[i];\n' +
-'                html += "</div>";\n' +
-'            }\n' +
-'            html += "</div>";\n' +
-'            html += "<div id=\\"explanation\\" class=\\"explanation\\"></div>";\n' +
-'            html += "</div>";\n' +
-'            html += "<button class=\\"next-button\\" id=\\"nextBtn\\" onclick=\\"nextQuestion()\\" style=\\"display: none;\\">Next Question →</button>";\n' +
-'            quizContent.innerHTML = html;\n' +
-'        }\n' +
-'\n' +
-'        function selectAnswer(index) {\n' +
-'            if (selectedAnswer !== null) return;\n' +
-'\n' +
-'            selectedAnswer = index;\n' +
-'            const options = document.querySelectorAll(".answer-option");\n' +
-'            \n' +
-'            for (let i = 0; i < options.length; i++) {\n' +
-'                options[i].style.pointerEvents = "none";\n' +
-'                if (i === currentQuestion.correct) {\n' +
-'                    options[i].classList.add("correct");\n' +
-'                } else if (i === selectedAnswer) {\n' +
-'                    options[i].classList.add("incorrect");\n' +
-'                }\n' +
-'            }\n' +
-'\n' +
-'            if (selectedAnswer !== currentQuestion.correct) {\n' +
-'                const explanationDiv = document.getElementById("explanation");\n' +
-'                explanationDiv.innerHTML = "<div class=\\"explanation-title\\">📚 Explanation:</div><div class=\\"explanation-text\\">" + currentQuestion.explanation + "</div>";\n' +
-'                explanationDiv.style.display = "block";\n' +
-'            }\n' +
-'\n' +
-'            askedQuestions.push(currentQuestion.index);\n' +
-'            questionsAnsweredInSession++;\n' +
-'            saveProgress();\n' +
-'            updateStats();\n' +
-'\n' +
-'            document.getElementById("nextBtn").style.display = "block";\n' +
-'        }\n' +
-'\n' +
-'        function nextQuestion() {\n' +
-'            displayNextQuestion();\n' +
-'        }\n' +
-'\n' +
-'        function showSessionComplete() {\n' +
-'            const html = "<div class=\\"question-card\\" style=\\"text-align: center;\\"><h2 style=\\"color: #667eea; margin-bottom: 20px;\\">✅ Session Complete!</h2><p style=\\"font-size: 1.2em; color: #666; margin-bottom: 20px;\\">You completed " + questionsAnsweredInSession + " questions!</p><p style=\\"font-size: 1em; color: #888; margin-bottom: 30px;\\">" + (questionPool.length - askedQuestions.length) + " questions remaining.</p><button onclick=\\"continueQuiz()\\">Continue Practicing</button><button onclick=\\"location.reload()\\" style=\\"margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\\">Start New Session</button></div>";\n' +
-'            document.getElementById("quizContent").innerHTML = html;\n' +
-'        }\n' +
-'\n' +
-'        function showCompletion() {\n' +
-'            const html = "<div class=\\"question-card\\" style=\\"text-align: center;\\"><h2 style=\\"color: #667eea; margin-bottom: 20px;\\">🎉 All Questions Complete!</h2><p style=\\"font-size: 1.2em; color: #666; margin-bottom: 20px;\\">You have answered all " + questionPool.length + " questions!</p><button onclick=\\"resetQuiz()\\">Start Over</button></div>";\n' +
-'            document.getElementById("quizContent").innerHTML = html;\n' +
-'        }\n' +
-'\n' +
-'        function continueQuiz() {\n' +
-'            questionsAnsweredInSession = 0;\n' +
-'            updateStats();\n' +
-'            displayNextQuestion();\n' +
-'        }\n' +
-'\n' +
-'        function resetQuiz() {\n' +
-'            askedQuestions = [];\n' +
-'            questionsAnsweredInSession = 0;\n' +
-'            saveProgress();\n' +
-'            updateStats();\n' +
-'            displayNextQuestion();\n' +
-'        }\n' +
-'    <\/script>\n' +
-'</body>\n' +
-'</html>';
-
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = subjectName.toLowerCase() + '-quiz-offline.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            alert('✅ ' + subjectName + ' quiz downloaded! Open the HTML file in any browser to practice offline.');
         }
     </script>
 </body>
