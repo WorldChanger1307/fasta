@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Fast & relevant questions for your upcoming exam">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="icon-192.png">
-    <title>FastA - Study Quiz</title>
+    <title>QuickA</title>
     <style>
         * {
             margin: 0;
@@ -16,528 +12,1228 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .container {
+            width: 100%;
+            max-width: 600px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 100%;
-            padding: 40px;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-align: center;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        .footer {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9em;
-            margin-top: 20px;
-        }
-
-        .subject-selection {
-            margin-bottom: 30px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1em;
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .quiz-container {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .question-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        .progress-fill {
+        .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100%;
-            transition: width 0.3s;
-        }
-
-        .question-text {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        .answers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .answer-option {
-            padding: 20px;
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+            color: white;
+            padding: 30px 20px;
             text-align: center;
-            font-size: 1em;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .answer-option:hover {
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Setup/Course Selection */
+        .setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group select:focus {
+            outline: none;
             border-color: #667eea;
-            background: #f0f4ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .start-btn {
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            background: #5568d3;
             transform: translateY(-2px);
         }
 
-        .answer-option.selected {
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Quiz */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .quiz-progress {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .back-btn {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Math Expression Styling */
+        .math {
+            font-family: 'Courier New', 'Monaco', 'Apple Chancery', monospace;
+            background: #f0f0ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        /* Multiple Choice (2x2) */
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .answer-btn {
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .answer-btn:hover {
             border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .answer-btn.selected {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .answer-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        /* Sort Order */
+        .sort-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .sort-item {
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sort-item:active {
+            cursor: grabbing;
+        }
+
+        .sort-item.drag-over {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        /* Matching Questions */
+        .matching-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .matching-pair {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .matching-label {
+            flex: 0 0 35%;
+            padding: 12px;
+            background: #f0f0ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .matching-select {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+            min-width: 250px;
+        }
+
+        .matching-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .matching-select.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .matching-select.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        /* Answer Key */
+        .answer-key {
+            background: #f9f9f9;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .answer-key.show {
+            display: block;
+        }
+
+        .answer-key-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .answer-key-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        .answer-key-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .answer-key-term {
+            font-weight: 600;
+            color: #333;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .answer-key-arrow {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .answer-key-def {
+            color: #555;
+            line-height: 1.4;
+        }
+
+        /* Open Answer / Free Response */
+        .math-symbol-menu {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .symbol-btn {
+            padding: 6px 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .symbol-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            background: #fafafa;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .math-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Feedback */
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+            border-left: 4px solid;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
             background: #667eea;
             color: white;
         }
 
-        .answer-option.correct {
-            border-color: #4caf50;
-            background: #4caf50;
-            color: white;
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
         }
 
-        .answer-option.incorrect {
-            border-color: #f44336;
-            background: #f44336;
-            color: white;
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
         }
 
-        .explanation {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
-            animation: slideIn 0.3s;
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .explanation-title {
-            font-weight: 600;
-            color: #856404;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .explanation-text {
-            color: #856404;
-            line-height: 1.6;
-        }
-
-        .next-button {
-            margin-top: 20px;
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .stat-item {
+        /* Results */
+        .results-section {
             text-align: center;
         }
 
-        .stat-number {
-            font-size: 1.5em;
-            font-weight: 600;
+        .score-display {
+            font-size: 56px;
+            font-weight: 700;
             color: #667eea;
+            margin: 25px 0;
         }
 
-        .stat-label {
-            font-size: 0.9em;
+        .score-message {
+            font-size: 16px;
             color: #666;
+            margin-bottom: 25px;
+            white-space: pre-line;
+            line-height: 1.6;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 12px;
+            color: #999;
+        }
 
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-
-            .question-text {
-                font-size: 1.1em;
-            }
-
-            .answers-grid {
+        /* Responsive */
+        @media (max-width: 500px) {
+            .answer-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .answer-option {
-                min-height: 60px;
-                padding: 15px;
-            }
-
-            .footer {
-                font-size: 0.8em;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎓 FastA</h1>
-        <p class="subtitle">Fast & relevant questions for your upcoming exam</p>
-        
-        <div id="setupSection">
-            <div class="subject-selection">
-                <label for="subject">Choose Your Subject:</label>
-                <select id="subject">
-                    <option value="">-- Select a Subject --</option>
-                    <option value="java">Introduction to Java (COMS 1004)</option>
-                    <option value="calculus">Calculus I</option>
-                </select>
-            </div>
-            
-            <div class="subject-selection">
-                <label for="questionLimit">Number of Questions:</label>
-                <select id="questionLimit">
-                    <option value="5">5 Questions (Quick Practice)</option>
-                    <option value="10">10 Questions (Short Session)</option>
-                    <option value="15">15 Questions (Medium Session)</option>
-                    <option value="20">20 Questions (Long Session)</option>
-                    <option value="unlimited">Unlimited (All Questions)</option>
-                </select>
-            </div>
-            
-            <button onclick="startQuiz()">Start Quiz</button>
+        <!-- Header -->
+        <div class="header">
+            <h1>QuickA</h1>
+            <p>Fast & relevant questions for your exam</p>
         </div>
 
-        <div id="quizSection" class="quiz-container">
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-number" id="questionsAnswered">0</div>
-                    <div class="stat-label">Answered</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="questionsRemaining">100</div>
-                    <div class="stat-label">Remaining</div>
+        <!-- Content -->
+        <div class="content">
+            <!-- Setup Section -->
+            <div id="setupSection" class="section active">
+                <div class="setup-form">
+                    <div class="form-group">
+                        <label for="courseSelect">Select Course</label>
+                        <select id="courseSelect">
+                            <option value="">-- Choose a course --</option>
+                            <option value="java">Intro to Java (COMS 1004)</option>
+                            <option value="calculus">Calculus I</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="questionCount">Number of Questions</label>
+                        <select id="questionCount">
+                            <option value="5">5 Questions</option>
+                            <option value="10" selected>10 Questions</option>
+                            <option value="15">15 Questions</option>
+                            <option value="20">20 Questions</option>
+                            <option value="unlimited">Unlimited</option>
+                        </select>
+                    </div>
+
+                    <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
                 </div>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+
+            <!-- Quiz Section -->
+            <div id="quizSection" class="section">
+                <div class="quiz-header">
+                    <span class="quiz-progress">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span>
+                    </span>
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                </div>
+
+                <div class="question-title" id="questionTitle"></div>
+
+                <div id="questionContainer"></div>
+
+                <div id="feedback" class="feedback"></div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()">Check Answer</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display: none;">Next Question</button>
+                </div>
             </div>
-            <div id="quizContent"></div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="section">
+                <div class="results-section">
+                    <h2 style="margin-bottom: 20px;">Quiz Complete!</h2>
+                    <div class="score-display" id="scoreDisplay">0%</div>
+                    <div class="score-message" id="scoreMessage"></div>
+                    <button class="btn btn-primary" onclick="goBack()" style="width: 200px; margin: 0 auto;">Try Another Quiz</button>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                By: Niv Brikman
+            </div>
         </div>
     </div>
 
-    <div class="footer">
-        By Niv Brikman
-    </div>
-
-    <script src="questions.js"></script>
     <script>
-        // Register service worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('Service Worker registered'))
-                    .catch(err => console.log('Service Worker registration failed'));
-            });
-        }
+        const questionBank = {
+            java: [
+                {
+                    type: 'multiple-choice',
+                    question: 'What is the correct syntax to declare a variable in Java?',
+                    answers: ['int x = 5;', 'x: int = 5;', '5 = int x;', 'int: x = 5;'],
+                    correct: 0,
+                    explanation: 'In Java, you declare a variable by writing the type first, then the variable name, then an equals sign, and finally the value.'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'Which of the following is NOT a primitive data type in Java?',
+                    answers: ['int', 'String', 'double', 'boolean'],
+                    correct: 1,
+                    explanation: 'String is a class (reference type), not a primitive type. The primitive types are: int, double, float, long, short, byte, char, and boolean.'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'What does the "new" keyword do in Java?',
+                    answers: ['Declares a variable', 'Creates a new instance of a class', 'Initializes a primitive', 'Imports a package'],
+                    correct: 1,
+                    explanation: 'The "new" keyword creates a new instance (object) of a class in memory and calls its constructor.'
+                },
+                {
+                    type: 'sort-order',
+                    question: 'Arrange these steps in the correct order of Java program execution:',
+                    items: ['JVM loads the bytecode', 'Source code is compiled to bytecode', 'main() method is executed', 'JVM interprets and executes bytecode'],
+                    correct: [1, 0, 3, 2],
+                    explanation: 'First, the source code is compiled to bytecode, then the JVM loads it, interprets it, and finally executes the main() method.'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'What is the output of this code?\nint x = 5;\nSystem.out.println(x++);\nSystem.out.println(x);',
+                    answers: ['5 and 5', '5 and 6', '6 and 6', '6 and 5'],
+                    correct: 1,
+                    explanation: 'The first print outputs 5 (post-increment returns the value before incrementing). The second print outputs 6 (x is now 6).'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'Which keyword is used to create a method that doesn\'t return a value?',
+                    answers: ['null', 'void', 'empty', 'none'],
+                    correct: 1,
+                    explanation: 'The "void" keyword indicates that a method does not return any value. It performs an action but doesn\'t return data.'
+                },
+                {
+                    type: 'drag-drop',
+                    question: 'Match each term with its definition:',
+                    pairs: [
+                        { term: 'Class', definition: 'A blueprint for creating objects' },
+                        { term: 'Object', definition: 'An instance of a class' },
+                        { term: 'Method', definition: 'A function defined inside a class' },
+                        { term: 'Variable', definition: 'A named container for data' }
+                    ],
+                    explanation: 'Classes are blueprints, objects are instances, methods are functions, and variables store data.'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'What is the correct way to start a for loop?',
+                    answers: ['for i = 0; i < 10; i++', 'for (int i = 0; i < 10; i++)', 'for int i = 0; i < 10; i++', 'for (i = 0, i < 10, i++)'],
+                    correct: 1,
+                    explanation: 'The correct syntax is: for (initialization; condition; increment). Parentheses are required and type declaration goes in the initialization.'
+                }
+            ],
+            calculus: [
+                {
+                    type: 'multiple-choice',
+                    question: 'Is <span class="math">f(x) = x³ - 3x</span> an even or odd function?',
+                    answers: ['Even', 'Odd', 'Both even and odd', 'Neither'],
+                    correct: 1,
+                    explanation: 'f(-x) = (-x)³ - 3(-x) = -x³ + 3x = -(x³ - 3x) = -f(x). Since f(-x) = -f(x), the function is odd.'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'If <span class="math">f(x) = 1/(x+2)</span>, what is the domain of <span class="math">f</span>?',
+                    answers: ['All real numbers', 'All real numbers except x = -2', 'x > -2', 'x < -2'],
+                    correct: 1,
+                    explanation: 'The function is undefined when the denominator equals zero. So x + 2 ≠ 0, which means x ≠ -2. The domain is all real numbers except -2.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'What is the domain of <span class="math">f(x) = √(x - 3)</span>? (Write in interval notation, like [3, ∞))',
+                    correct: ['[3, ∞)', '[3, infinity)', 'x ≥ 3'],
+                    explanation: 'For the square root to be defined, the expression under the radical must be non-negative. So x - 3 ≥ 0, which means x ≥ 3. In interval notation: [3, ∞)'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'What is <span class="math">lim(x→0) sin(x)/x</span>?',
+                    answers: ['0', '1', 'Undefined', '∞'],
+                    correct: 1,
+                    explanation: 'This is a fundamental limit in calculus. As x approaches 0, the ratio sin(x)/x approaches 1. This can be verified numerically or geometrically using the unit circle.'
+                },
+                {
+                    type: 'sort-order',
+                    question: 'Arrange these limit evaluation steps in the correct order:',
+                    items: ['Factor out common terms', 'Simplify the expression', 'Apply limit laws', 'Substitute the value'],
+                    correct: [0, 2, 1, 3],
+                    explanation: 'When evaluating limits algebraically: first factor common terms, then apply limit laws to break the expression down, simplify what you get, and finally substitute the limit value.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Evaluate: <span class="math">lim(x→5) (4x² + 3)/(x - 1)</span>',
+                    correct: ['103/4', '25.75'],
+                    explanation: 'Since this is a rational function and x = 5 is in the domain: lim = (4·25 + 3)/(5 - 1) = (100 + 3)/4 = 103/4 = 25.75'
+                },
+                {
+                    type: 'multiple-choice',
+                    question: 'Does <span class="math">f(x) = x²</span> have an inverse on its full domain (-∞, ∞)?',
+                    answers: ['Yes, the inverse is √x', 'No, because it is not one-to-one', 'Yes, the inverse is -√x', 'Only on [0, ∞)'],
+                    correct: 1,
+                    explanation: 'f(x) = x² is not one-to-one on (-∞, ∞) because f(2) = f(-2) = 4. Two different inputs give the same output, so no inverse exists on the full domain. However, restricting to [0, ∞) gives a one-to-one function with an inverse.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'If <span class="math">f(x) = 2x + 5</span>, find <span class="math">f⁻¹(x)</span>. (Write as a formula)',
+                    correct: ['f⁻¹(x) = (x-5)/2', '(x-5)/2', '(x - 5)/2'],
+                    explanation: 'Set y = 2x + 5 and solve for x: x = (y - 5)/2. Swapping x and y: f⁻¹(x) = (x - 5)/2'
+                },
+                {
+                    type: 'drag-drop',
+                    question: 'Match each function type with its key property:',
+                    pairs: [
+                        { term: 'Even function', definition: 'f(-x) = f(x)' },
+                        { term: 'Odd function', definition: 'f(-x) = -f(x)' },
+                        { term: 'Increasing function', definition: 'f(x₁) < f(x₂) when x₁ < x₂' },
+                        { term: 'One-to-one function', definition: 'Different inputs give different outputs' }
+                    ],
+                    explanation: 'These are fundamental properties that define different types of functions. Even and odd functions have symmetry properties. Increasing functions always go up. One-to-one functions have inverses.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'What is the range of <span class="math">g(x) = e^x</span>? (Write in interval notation)',
+                    correct: ['(0, ∞)', '(0, infinity)', 'y > 0'],
+                    explanation: 'The exponential function e^x is always positive for all real x. It approaches 0 as x→-∞ and grows without bound as x increases. So the range is (0, ∞).'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Calculate: <span class="math">log₃(9)</span>',
+                    correct: ['2'],
+                    explanation: 'log₃(9) asks: "3 to what power equals 9?" Since 3² = 9, the answer is 2. In general, logₐ(x) = y exactly when x = aʸ.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'If a bacteria population doubles every 4 days starting with 100 bacteria, how many will there be after 12 days?',
+                    correct: ['800', '800 bacteria'],
+                    explanation: 'In 12 days, there are 12/4 = 3 doubling periods. After 3 doublings: 100 → 200 → 400 → 800. Using the formula: 100 · 2^(12/4) = 100 · 2³ = 100 · 8 = 800'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Simplify using logarithm properties: <span class="math">log₃(12) - (1/2)log₃(16)</span>',
+                    correct: ['log₃(3)', '1', 'log₃(3) = 1'],
+                    explanation: 'Using log properties: log₃(12) - (1/2)log₃(16) = log₃(12) - log₃(4) = log₃(12/4) = log₃(3) = 1'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Solve for x: <span class="math">2^x = 8</span>',
+                    correct: ['3', 'x = 3'],
+                    explanation: 'Since 2³ = 8, we have x = 3. You can also use logarithms: x = log₂(8) = 3.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Evaluate: <span class="math">ln(e^5)</span>',
+                    correct: ['5'],
+                    explanation: 'ln(e^5) = 5 because ln and e are inverse functions. In general, ln(e^x) = x.'
+                },
+                {
+                    type: 'open-answer',
+                    question: 'Estimate <span class="math">lim(x→0) sin(x)/x</span> by evaluating at <span class="math">x = 0.1</span>. What do you get? (Round to 3 decimal places)',
+                    correct: ['0.998', '0.999', 'approximately 1', '1'],
+                    explanation: 'sin(0.1)/0.1 ≈ 0.0998/0.1 ≈ 0.998. As x gets closer to 0, the ratio approaches 1.'
+                }
+            ]
+        };
 
-        let currentSubject = '';
-        let questionPool = [];
-        let askedQuestions = [];
-        let currentQuestion = null;
-        let selectedAnswer = null;
-        let questionLimit = 'unlimited';
-        let questionsAnsweredInSession = 0;
-        const STORAGE_KEY_PREFIX = 'quiz_progress_';
-
-        function getClientId() {
-            let clientId = localStorage.getItem('client_id');
-            if (!clientId) {
-                clientId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('client_id', clientId);
-            }
-            return clientId;
-        }
-
-        function loadProgress() {
-            const clientId = getClientId();
-            const key = STORAGE_KEY_PREFIX + currentSubject + '_' + clientId;
-            const saved = localStorage.getItem(key);
-            return saved ? JSON.parse(saved) : [];
-        }
-
-        function saveProgress() {
-            const clientId = getClientId();
-            const key = STORAGE_KEY_PREFIX + currentSubject + '_' + clientId;
-            localStorage.setItem(key, JSON.stringify(askedQuestions));
-        }
+        let currentCourse = null;
+        let questionsPerQuiz = 10;
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let score = 0;
+        let answered = false;
+        let userAnswers = [];
 
         function startQuiz() {
-            const subject = document.getElementById('subject').value;
-            const limit = document.getElementById('questionLimit').value;
-            
-            if (!subject) {
-                alert('Please select a subject first!');
+            const course = document.getElementById('courseSelect').value;
+            const count = document.getElementById('questionCount').value;
+
+            if (!course) {
+                alert('Please select a course');
                 return;
             }
 
-            currentSubject = subject;
-            questionLimit = limit;
-            questionsAnsweredInSession = 0;
-            questionPool = window.QUESTIONS[subject];
-            askedQuestions = loadProgress();
-
-            if (askedQuestions.length >= questionPool.length) {
-                if (confirm('You\'ve completed all questions! Start over?')) {
-                    askedQuestions = [];
-                    saveProgress();
-                } else {
-                    return;
-                }
-            }
-
-            document.getElementById('setupSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'block';
+            currentCourse = course;
+            questionsPerQuiz = count === 'unlimited' ? questionBank[course].length : parseInt(count);
             
-            updateStats();
-            displayNextQuestion();
+            questions = [...questionBank[course]]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, questionsPerQuiz);
+
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            answered = false;
+
+            showSection('quizSection');
+            displayQuestion();
         }
 
-        function updateStats() {
-            const totalInSession = questionLimit === 'unlimited' ? questionPool.length : parseInt(questionLimit);
-            const remaining = questionLimit === 'unlimited' 
-                ? questionPool.length - askedQuestions.length 
-                : Math.max(0, totalInSession - questionsAnsweredInSession);
-            
-            document.getElementById('questionsAnswered').textContent = questionsAnsweredInSession;
-            document.getElementById('questionsRemaining').textContent = remaining;
-            
-            const progress = questionLimit === 'unlimited'
-                ? (askedQuestions.length / questionPool.length) * 100
-                : (questionsAnsweredInSession / totalInSession) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-        }
-
-        function displayNextQuestion() {
-            if (questionLimit !== 'unlimited' && questionsAnsweredInSession >= parseInt(questionLimit)) {
-                showSessionComplete();
+        function displayQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResults();
                 return;
             }
 
-            const availableIndices = questionPool
-                .map((_, index) => index)
-                .filter(index => !askedQuestions.includes(index));
+            const q = questions[currentQuestionIndex];
+            answered = false;
 
-            if (availableIndices.length === 0) {
-                showCompletion();
-                return;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = questions.length;
+            const questionTitle = document.getElementById('questionTitle');
+            questionTitle.innerHTML = q.question;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+
+            if (q.type === 'multiple-choice') {
+                displayMultipleChoice(q, container);
+            } else if (q.type === 'sort-order') {
+                displaySortOrder(q, container);
+            } else if (q.type === 'drag-drop') {
+                displayDragDrop(q, container);
+            } else if (q.type === 'open-answer') {
+                displayOpenAnswer(q, container);
             }
-
-            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-            currentQuestion = { ...questionPool[randomIndex], index: randomIndex };
-            selectedAnswer = null;
-
-            const quizContent = document.getElementById('quizContent');
-            quizContent.innerHTML = `
-                <div class="question-card">
-                    <div class="question-text">
-                        ${currentQuestion.question}
-                    </div>
-                    <div class="answers-grid">
-                        ${currentQuestion.choices.map((choice, index) => `
-                            <div class="answer-option" onclick="selectAnswer(${index})">
-                                ${choice}
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div id="explanation" class="explanation"></div>
-                </div>
-                <button class="next-button" id="nextBtn" onclick="nextQuestion()" style="display: none;">Next Question →</button>
-            `;
         }
 
-        function selectAnswer(index) {
-            if (selectedAnswer !== null) return;
+        function displayMultipleChoice(q, container) {
+            const grid = document.createElement('div');
+            grid.className = 'answer-grid';
 
-            selectedAnswer = index;
-            const options = document.querySelectorAll('.answer-option');
-            
-            options.forEach((option, i) => {
-                option.style.pointerEvents = 'none';
-                if (i === currentQuestion.correct) {
-                    option.classList.add('correct');
-                } else if (i === selectedAnswer) {
-                    option.classList.add('incorrect');
-                }
+            q.answers.forEach((ans, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = ans;
+                btn.id = `answer-${idx}`;
+                btn.onclick = () => selectMC(idx);
+                grid.appendChild(btn);
             });
 
-            if (selectedAnswer !== currentQuestion.correct) {
-                const explanationDiv = document.getElementById('explanation');
-                explanationDiv.innerHTML = `
-                    <div class="explanation-title">📚 Explanation:</div>
-                    <div class="explanation-text">${currentQuestion.explanation}</div>
-                `;
-                explanationDiv.style.display = 'block';
+            container.appendChild(grid);
+        }
+
+        function selectMC(idx) {
+            if (answered) return;
+            document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById(`answer-${idx}`).classList.add('selected');
+            userAnswers[currentQuestionIndex] = idx;
+        }
+
+        function displayOpenAnswer(q, container) {
+            const wrapper = document.createElement('div');
+
+            // Math symbol toolbar
+            const mathMenu = document.createElement('div');
+            mathMenu.className = 'math-symbol-menu';
+
+            const mathSymbols = [
+                { label: '√', insert: 'sqrt(' },
+                { label: '²', insert: '^2' },
+                { label: '³', insert: '^3' },
+                { label: 'ⁿ', insert: '^n' },
+                { label: '∞', insert: 'infinity' },
+                { label: 'π', insert: 'pi' },
+                { label: '±', insert: '±' },
+                { label: '≤', insert: '<=' },
+                { label: '≥', insert: '>=' },
+                { label: '≠', insert: '!=' },
+                { label: '∫', insert: 'integral' },
+                { label: 'Σ', insert: 'sum' },
+                { label: '∂', insert: 'partial' },
+                { label: '≈', insert: '≈' }
+            ];
+
+            mathSymbols.forEach(symbol => {
+                const btn = document.createElement('button');
+                btn.className = 'symbol-btn';
+                btn.textContent = symbol.label;
+                btn.title = symbol.insert;
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    insertSymbol(symbol.insert);
+                };
+                mathMenu.appendChild(btn);
+            });
+
+            // Input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'answer-input';
+            input.id = 'openAnswer';
+            input.placeholder = 'Type your answer here...';
+            input.addEventListener('change', () => {
+                userAnswers[currentQuestionIndex] = input.value;
+            });
+            input.addEventListener('input', () => {
+                userAnswers[currentQuestionIndex] = input.value;
+            });
+
+            const label = document.createElement('div');
+            label.className = 'math-label';
+            label.textContent = 'Tip: Use the buttons above to insert math symbols';
+
+            wrapper.appendChild(mathMenu);
+            wrapper.appendChild(input);
+            wrapper.appendChild(label);
+            container.appendChild(wrapper);
+        }
+
+        function insertSymbol(symbol) {
+            const input = document.getElementById('openAnswer');
+            if (!input) return;
+
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+
+            input.value = text.substring(0, start) + symbol + text.substring(end);
+            input.selectionStart = input.selectionEnd = start + symbol.length;
+            input.focus();
+            
+            // Update answer
+            userAnswers[currentQuestionIndex] = input.value;
+        }
+
+        function displaySortOrder(q, container) {
+            const sortContainer = document.createElement('div');
+            sortContainer.className = 'sort-container';
+            sortContainer.id = 'sortContainer';
+
+            // Initialize answer for this question
+            if (!userAnswers[currentQuestionIndex]) {
+                userAnswers[currentQuestionIndex] = q.items.map((_, i) => i);
             }
 
-            askedQuestions.push(currentQuestion.index);
-            questionsAnsweredInSession++;
-            saveProgress();
-            updateStats();
+            let draggedElement = null;
 
+            q.items.forEach((item, idx) => {
+                const sortItem = document.createElement('div');
+                sortItem.className = 'sort-item';
+                sortItem.textContent = item;
+                sortItem.draggable = true;
+                sortItem.dataset.originalIndex = idx;
+
+                sortItem.addEventListener('dragstart', (e) => {
+                    draggedElement = sortItem;
+                    sortItem.style.opacity = '0.5';
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                sortItem.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const container = sortItem.parentNode;
+                    const allItems = [...container.querySelectorAll('.sort-item')];
+                    const draggedIndex = allItems.indexOf(draggedElement);
+                    const targetIndex = allItems.indexOf(sortItem);
+                    
+                    if (draggedIndex < targetIndex) {
+                        sortItem.parentNode.insertBefore(draggedElement, sortItem.nextSibling);
+                    } else {
+                        sortItem.parentNode.insertBefore(draggedElement, sortItem);
+                    }
+                });
+
+                sortItem.addEventListener('dragend', (e) => {
+                    sortItem.style.opacity = '1';
+                    
+                    // Update the answer array with new order
+                    const container = document.getElementById('sortContainer');
+                    const newOrder = [];
+                    container.querySelectorAll('.sort-item').forEach(item => {
+                        newOrder.push(parseInt(item.dataset.originalIndex));
+                    });
+                    userAnswers[currentQuestionIndex] = newOrder;
+                });
+
+                sortContainer.appendChild(sortItem);
+            });
+
+            container.appendChild(sortContainer);
+        }
+
+        function displayDragDrop(q, container) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'matching-container';
+            wrapper.id = 'matchingWrapper';
+            
+            // Create a map of definitions with shorter labels
+            const defMap = {};
+            q.pairs.forEach((pair) => {
+                defMap[pair.definition] = pair.definition;
+            });
+
+            // Initialize answers object if needed
+            if (!userAnswers[currentQuestionIndex]) {
+                userAnswers[currentQuestionIndex] = {};
+            }
+
+            q.pairs.forEach((pair, idx) => {
+                const matchingPair = document.createElement('div');
+                matchingPair.className = 'matching-pair';
+
+                const label = document.createElement('div');
+                label.className = 'matching-label';
+                label.textContent = pair.term;
+
+                const select = document.createElement('select');
+                select.className = 'matching-select';
+                select.id = `match-${idx}`;
+                select.dataset.termIndex = idx;
+                select.dataset.correctDef = pair.definition;
+
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '-- Select --';
+                select.appendChild(option);
+
+                // Add each definition as an option
+                q.pairs.forEach((pair2) => {
+                    const opt = document.createElement('option');
+                    opt.value = pair2.definition;
+                    opt.textContent = pair2.definition;
+                    select.appendChild(opt);
+                });
+
+                select.addEventListener('change', (e) => {
+                    console.log(`Match ${idx}: ${e.target.value}`);
+                    userAnswers[currentQuestionIndex][idx] = e.target.value;
+                });
+
+                matchingPair.appendChild(label);
+                matchingPair.appendChild(select);
+                wrapper.appendChild(matchingPair);
+            });
+
+            // Add answer key (hidden until revealed)
+            const answerKey = document.createElement('div');
+            answerKey.className = 'answer-key';
+            answerKey.id = 'answerKey';
+
+            const keyTitle = document.createElement('div');
+            keyTitle.className = 'answer-key-title';
+            keyTitle.textContent = '📋 Correct Answers:';
+            answerKey.appendChild(keyTitle);
+
+            q.pairs.forEach((pair) => {
+                const keyItem = document.createElement('div');
+                keyItem.className = 'answer-key-item';
+
+                const term = document.createElement('div');
+                term.className = 'answer-key-term';
+                term.textContent = pair.term;
+
+                const arrow = document.createElement('div');
+                arrow.className = 'answer-key-arrow';
+                arrow.textContent = '→';
+
+                const def = document.createElement('div');
+                def.className = 'answer-key-def';
+                def.textContent = pair.definition;
+
+                keyItem.appendChild(term);
+                keyItem.appendChild(arrow);
+                keyItem.appendChild(def);
+                answerKey.appendChild(keyItem);
+            });
+
+            container.appendChild(wrapper);
+            container.appendChild(answerKey);
+        }
+
+        function submitAnswer() {
+            if (answered) return;
+
+            const q = questions[currentQuestionIndex];
+            const userAns = userAnswers[currentQuestionIndex];
+
+            if (q.type === 'multiple-choice') {
+                if (userAns === undefined) {
+                    alert('Please select an answer');
+                    return;
+                }
+
+                answered = true;
+                const feedback = document.getElementById('feedback');
+                feedback.classList.add('show');
+
+                if (userAns === q.correct) {
+                    score++;
+                    feedback.classList.add('correct');
+                    feedback.classList.remove('incorrect');
+                    feedback.innerHTML = `<div class="feedback-title">✅ Correct!</div><p>${q.explanation}</p>`;
+                } else {
+                    feedback.classList.add('incorrect');
+                    feedback.classList.remove('correct');
+                    const correctAnswer = q.answers[q.correct];
+                    feedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div><p>${q.explanation}</p><p><strong>Correct answer:</strong> ${correctAnswer}</p>`;
+                }
+            } else if (q.type === 'sort-order') {
+                if (!userAns || userAns.length === 0) {
+                    alert('Please arrange the items');
+                    return;
+                }
+
+                // Check if the order matches the correct answer
+                let isCorrect = true;
+                for (let i = 0; i < userAns.length; i++) {
+                    if (userAns[i] !== q.correct[i]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+
+                answered = true;
+                const feedback = document.getElementById('feedback');
+                feedback.classList.add('show');
+
+                if (isCorrect) {
+                    score++;
+                    feedback.classList.add('correct');
+                    feedback.classList.remove('incorrect');
+                    feedback.innerHTML = `<div class="feedback-title">✅ Correct order!</div><p>${q.explanation}</p>`;
+                } else {
+                    feedback.classList.add('incorrect');
+                    feedback.classList.remove('correct');
+                    feedback.innerHTML = `<div class="feedback-title">❌ Wrong order</div><p>${q.explanation}</p>`;
+                }
+            } else if (q.type === 'open-answer') {
+                if (!userAns || userAns.trim() === '') {
+                    alert('Please type an answer');
+                    return;
+                }
+
+                answered = true;
+                const feedback = document.getElementById('feedback');
+                feedback.classList.add('show');
+
+                // For open answers, check if any of the acceptable answers match
+                let isCorrect = false;
+                if (Array.isArray(q.correct)) {
+                    // Multiple acceptable answers
+                    isCorrect = q.correct.some(correct => 
+                        userAns.toLowerCase().trim() === correct.toLowerCase().trim()
+                    );
+                } else {
+                    // Single answer
+                    isCorrect = userAns.toLowerCase().trim() === q.correct.toLowerCase().trim();
+                }
+
+                if (isCorrect) {
+                    score++;
+                    feedback.classList.add('correct');
+                    feedback.classList.remove('incorrect');
+                    feedback.innerHTML = `<div class="feedback-title">✅ Correct!</div><p>${q.explanation}</p>`;
+                } else {
+                    feedback.classList.add('incorrect');
+                    feedback.classList.remove('correct');
+                    const correctAnswer = Array.isArray(q.correct) ? q.correct[0] : q.correct;
+                    feedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div><p>${q.explanation}</p><p><strong>Correct answer:</strong> ${correctAnswer}</p>`;
+                }
+            } else if (q.type === 'drag-drop') {
+                // Check if it's an object with matches
+                if (typeof userAns !== 'object' || !userAns) {
+                    alert('Please match all items');
+                    return;
+                }
+
+                // Check if all items are matched
+                if (Object.keys(userAns).length < q.pairs.length) {
+                    alert('Please match all items');
+                    return;
+                }
+
+                // Validate each match
+                let allCorrect = true;
+                for (let i = 0; i < q.pairs.length; i++) {
+                    if (userAns[i] !== q.pairs[i].definition) {
+                        allCorrect = false;
+                        break;
+                    }
+                }
+
+                answered = true;
+                const feedback = document.getElementById('feedback');
+                feedback.classList.add('show');
+
+                if (allCorrect) {
+                    score++;
+                    feedback.classList.add('correct');
+                    feedback.classList.remove('incorrect');
+                    feedback.innerHTML = `<div class="feedback-title">✅ Perfect match!</div><p>${q.explanation}</p>`;
+                } else {
+                    feedback.classList.add('incorrect');
+                    feedback.classList.remove('correct');
+                    feedback.innerHTML = `<div class="feedback-title">❌ Not quite right</div><p>${q.explanation}</p>`;
+                }
+
+                // Show the answer key
+                const answerKey = document.getElementById('answerKey');
+                if (answerKey) {
+                    answerKey.classList.add('show');
+                }
+            }
+
+            document.getElementById('submitBtn').style.display = 'none';
             document.getElementById('nextBtn').style.display = 'block';
         }
 
         function nextQuestion() {
-            displayNextQuestion();
+            currentQuestionIndex++;
+            displayQuestion();
         }
 
-        function showSessionComplete() {
-            const totalAsked = questionsAnsweredInSession;
-            const limit = parseInt(questionLimit);
-            
-            document.getElementById('quizContent').innerHTML = `
-                <div class="question-card" style="text-align: center;">
-                    <h2 style="color: #667eea; margin-bottom: 20px;">✅ Session Complete!</h2>
-                    <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
-                        You completed ${totalAsked} questions!
-                    </p>
-                    <p style="font-size: 1em; color: #888; margin-bottom: 30px;">
-                        ${questionPool.length - askedQuestions.length} questions remaining in this subject.
-                    </p>
-                    <button onclick="continueQuiz()">Continue Practicing</button>
-                    <button onclick="location.reload()" style="margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Start New Session</button>
-                </div>
-            `;
+        function showResults() {
+            const pct = Math.round((score / questions.length) * 100);
+            document.getElementById('scoreDisplay').textContent = pct + '%';
+
+            let msg = '';
+            if (pct >= 80) msg = '✅ Great job!';
+            else if (pct >= 70) msg = '👍 Good work!';
+            else if (pct >= 60) msg = '📚 Keep studying!';
+            else msg = '💪 More practice needed!';
+
+            document.getElementById('scoreMessage').textContent = `You got ${score} out of ${questions.length} correct.\n\n${msg}`;
+            showSection('resultsSection');
         }
 
-        function showCompletion() {
-            document.getElementById('quizContent').innerHTML = `
-                <div class="question-card" style="text-align: center;">
-                    <h2 style="color: #667eea; margin-bottom: 20px;">🎉 All Questions Complete!</h2>
-                    <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
-                        You've answered all ${questionPool.length} questions in this subject!
-                    </p>
-                    <button onclick="resetQuiz()">Start Over</button>
-                    <button onclick="location.reload()" style="margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Choose Different Subject</button>
-                </div>
-            `;
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        function continueQuiz() {
-            questionsAnsweredInSession = 0;
-            updateStats();
-            displayNextQuestion();
-        }
-
-        function resetQuiz() {
-            askedQuestions = [];
-            questionsAnsweredInSession = 0;
-            saveProgress();
-            updateStats();
-            displayNextQuestion();
+        function goBack() {
+            showSection('setupSection');
+            document.getElementById('courseSelect').value = '';
+            document.getElementById('questionCount').value = '10';
         }
     </script>
 </body>
